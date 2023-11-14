@@ -894,6 +894,7 @@ static void term_clear_scrollback(Term *term, emacs_env *env) {
   term_sb_clear(term);
   vterm_screen_flush_damage(term->vts);
   term_redraw(term, env);
+  vterm_screen_reset(term->vts, 1);  
 }
 
 static void term_process_key(Term *term, emacs_env *env, unsigned char *key,
