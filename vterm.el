@@ -1546,7 +1546,8 @@ Argument EVENT process event."
                         (if (buffer-live-p buf) buf nil)
                         event)
     (if (and vterm-kill-buffer-on-exit (buffer-live-p buf))
-        (kill-buffer buf))))
+      (with-current-buffer buf
+        (kill-buffer-and-window)))))
 
 (defun vterm--text-scale-mode (&optional _argv)
   "Fix `line-number' height for scaled text."
