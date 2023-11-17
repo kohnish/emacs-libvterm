@@ -1644,7 +1644,7 @@ If N is negative backward-line from end of buffer."
                   (progn
                     (when (file-directory-p dir)
                       (setq directory (file-name-as-directory dir))))
-                (setq directory (file-name-as-directory (concat "/-:" path))))))
+                (setq directory (file-name-as-directory (concat "/sshx:" host ":" dir))))))
         (when (file-directory-p path)
           (setq directory (file-name-as-directory path))))
       directory)))
