@@ -172,13 +172,7 @@ the executable."
   :type 'string
   :group 'vterm)
 
-(defcustom vterm-tramp-shells '(("docker" "/bin/sh"))
-  "The shell that gets run in the vterm for tramp.
-
-`vterm-tramp-shells' has to be a list of pairs of the format:
-\(TRAMP-METHOD SHELL)"
-  :type '(alist :key-type string :value-type string)
-  :group 'vterm)
+(defcustom vterm-tramp-shells '(("docker" . "/bin/sh")) "The shell that gets run in the vterm for tramp.")
 
 (defcustom vterm-buffer-name "*vterm*"
   "The basename used for vterm buffers.
