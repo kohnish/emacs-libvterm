@@ -767,7 +767,12 @@ Exceptions are defined by `vterm-keymap-exceptions'."
 
     (add-function :filter-return
                   (local 'filter-buffer-substring-function)
-                  #'vterm--filter-buffer-substring)
+      #'vterm--filter-buffer-substring)
+    (let ((process-environment tramp-remote-process-environment))
+      (setenv "PAGER" nil)
+      (setenv "HISTFILE" nil)
+      (setopt tramp-remote-process-environment process-environment))
+
     (setq vterm--process
           (make-process
            :name "vterm"
@@ -817,9 +822,9 @@ Exceptions are defined by `vterm-keymap-exceptions'."
   (if (ignore-errors (file-remote-p default-directory))
     (with-parsed-tramp-file-name default-directory nil
       (cond
-        ((file-exists-p (format "/%s:%s:/bin/zsh" method host)) (with-connection-local-variables shell-file-name "/bin/zsh -l"))
-        ((file-exists-p (format "/%s:%s:/bin/bash" method host)) (with-connection-local-variables shell-file-name "/bin/bash -l"))
-        (t (with-connection-local-variables shell-file-name "/bin/sh -l"))))
+        ((file-exists-p (format "/%s:%s:/bin/zsh" method host)) (with-connection-local-variables shell-file-name "/bin/zsh"))
+        ((file-exists-p (format "/%s:%s:/bin/bash" method host)) (with-connection-local-variables shell-file-name "/bin/bash"))
+        (t (with-connection-local-variables shell-file-name "/bin/sh"))))
     vterm-shell))
 
 (defun vterm--bookmark-make-record ()
