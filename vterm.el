@@ -815,10 +815,11 @@ Exceptions are defined by `vterm-keymap-exceptions'."
 (defun vterm--get-shell ()
   "Get the shell that gets run in the vterm."
   (if (ignore-errors (file-remote-p default-directory))
-      (with-parsed-tramp-file-name default-directory nil
-        (or (cadr (assoc method vterm-tramp-shells))
-            (with-connection-local-variables shell-file-name)
-            vterm-shell))
+    (with-parsed-tramp-file-name default-directory nil
+      (cond
+        ((file-exists-p (format "/%s:%s:/bin/zsh" method host)) (with-connection-local-variables shell-file-name "/bin/zsh -l"))
+        ((file-exists-p (format "/%s:%s:/bin/bash" method host)) (with-connection-local-variables shell-file-name "/bin/bash -l"))
+        (t (with-connection-local-variables shell-file-name "/bin/sh -l"))))
     vterm-shell))
 
 (defun vterm--bookmark-make-record ()
