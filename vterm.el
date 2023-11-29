@@ -821,6 +821,8 @@ Exceptions are defined by `vterm-keymap-exceptions'."
   "Get the shell that gets run in the vterm."
   (if (ignore-errors (file-remote-p default-directory))
     (with-parsed-tramp-file-name default-directory nil
+      (setq-local vterm--tramp-host host)
+      (setq-local vterm--tramp-method method)
       (cond
         ((file-exists-p (format "/%s:%s:/bin/zsh" method host)) (with-connection-local-variables shell-file-name "/bin/zsh"))
         ((file-exists-p (format "/%s:%s:/bin/bash" method host)) (with-connection-local-variables shell-file-name "/bin/bash"))
@@ -1639,13 +1641,18 @@ If N is negative backward-line from end of buffer."
           (progn
             (let ((user (match-string 1 path))
                   (host (match-string 2 path))
-                  (dir (match-string 3 path)))
+                   (dir (match-string 3 path)))
+              (when (bound-and-true-p vterm--tramp-host)
+                (setf host vterm--tramp-host))
+              (setf method "/sshx:")
+              (when (bound-and-true-p vterm--tramp-method)
+                (setf method (concat "/" vterm--tramp-method ":")))
               (if (and (string-equal user user-login-name)
                        (string-equal host (system-name)))
                   (progn
                     (when (file-directory-p dir)
                       (setq directory (file-name-as-directory dir))))
-                (setq directory (file-name-as-directory (concat "/sshx:" host ":" dir))))))
+                (setq directory (file-name-as-directory (concat method host ":" dir))))))
         (when (file-directory-p path)
           (setq directory (file-name-as-directory path))))
       directory)))
