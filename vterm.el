@@ -769,6 +769,24 @@ Exceptions are defined by `vterm-keymap-exceptions'."
                   (local 'filter-buffer-substring-function)
       #'vterm--filter-buffer-substring)
 
+    ;; Undo the mess made by tramp to get the real terminal experience
+    (let ((process-environment tramp-remote-process-environment))
+      (setenv "HISTFILE" nil)
+      (setenv "HISTFILESIZE" nil)
+      (setenv "PROMPT_COMMAND" nil)
+      (setenv "PS1" nil)
+      (setenv "LC_ALL" nil)
+      (setenv "TERM" nil)
+      (setenv "TMPOUT" nil)
+      (setenv "LC_CTYPE" nil)
+      (setenv "CDPATH" nil)
+      (setenv "HISTORY" nil)
+      (setenv "MAIL" nil)
+      (setenv "MAILCHECK" nil)
+      (setenv "MAILPATH" nil)
+      (setenv "ENV" nil)
+      (setenv "PAGER" nil))
+
     (setq vterm--process
           (make-process
            :name "vterm"
@@ -776,7 +794,7 @@ Exceptions are defined by `vterm-keymap-exceptions'."
            :command
            `("/bin/sh" "-c"
              ,(format
-               "stty -nl sane %s erase ^? rows %d columns %d >/dev/null && exec %s -i"
+               "stty -nl sane %s erase ^? rows %d columns %d >/dev/null && exec %s -l"
                ;; Some stty implementations (i.e. that of *BSD) do not
                ;; support the iutf8 option.  to handle that, we run some
                ;; heuristics to work out if the system supports that
