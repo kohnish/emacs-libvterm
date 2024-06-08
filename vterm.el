@@ -653,6 +653,7 @@ Exceptions are defined by `vterm-keymap-exceptions'."
     (define-key map [backtab]                   #'vterm--self-insert)
     (define-key map [backspace]                 #'vterm-send-backspace)
     (define-key map (kbd "DEL")                 #'vterm-send-backspace)
+    (define-key map (kbd "<deletechar>")        #'vterm-send-delete)
     (define-key map [delete]                    #'vterm-send-delete)
     (define-key map [M-backspace]               #'vterm-send-meta-backspace)
     (define-key map (kbd "M-DEL")               #'vterm-send-meta-backspace)
