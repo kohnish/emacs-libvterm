@@ -926,7 +926,6 @@ Optional argument RESET clears all the errors."
     (save-excursion
       (setq truncate-lines t)
       (vterm--reinsert-fake-newlines)))
-  (vterm-reset-cursor-point)
   (use-local-map vterm-mode-map)
   (vterm-send-start))
 
