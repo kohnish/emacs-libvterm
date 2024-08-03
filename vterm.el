@@ -842,7 +842,7 @@ Exceptions are defined by `vterm-keymap-exceptions'."
         ((file-exists-p (format "/%s:%s:/bin/zsh" method host)) (with-connection-local-variables shell-file-name "/bin/zsh"))
         ((file-exists-p (format "/%s:%s:/bin/bash" method host)) (with-connection-local-variables shell-file-name "/bin/bash"))
         (t (with-connection-local-variables shell-file-name "/bin/sh"))))
-    vterm-shell))
+    (getenv "SHELL")))
 
 (defun vterm--bookmark-make-record ()
   "Create a vterm bookmark.
