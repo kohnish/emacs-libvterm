@@ -795,7 +795,7 @@ Exceptions are defined by `vterm-keymap-exceptions'."
            :command
            `("/bin/sh" "-c"
              ,(format
-               "stty -nl sane %s erase ^? rows %d columns %d >/dev/null && exec %s -l"
+               "stty -nl sane %s erase ^? rows %d columns %d >/dev/null && unset PAGER && exec %s -l"
                ;; Some stty implementations (i.e. that of *BSD) do not
                ;; support the iutf8 option.  to handle that, we run some
                ;; heuristics to work out if the system supports that
