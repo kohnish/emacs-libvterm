@@ -105,55 +105,59 @@ the executable."
 (defun vterm-module-compile ()
   "Compile vterm-module."
   (interactive)
-  (when (vterm-module--cmake-is-available)
-    (let* ((vterm-directory
-            (shell-quote-argument
-             ;; NOTE: This is a workaround to fix an issue with how the Emacs
-             ;; feature/native-comp branch changes the result of
-             ;; `(locate-library "vterm")'. See emacs-devel thread
-             ;; https://lists.gnu.org/archive/html/emacs-devel/2020-07/msg00306.html
-             ;; for a discussion.
-             (file-name-directory (locate-library "vterm.el" t))))
-           (make-commands
-            (concat
-             "cd " vterm-directory "; \
+  (if (eq system-type 'windows-nt)
+    t
+    (when (vterm-module--cmake-is-available)
+      (let* ((vterm-directory
+               (shell-quote-argument
+                 ;; NOTE: This is a workaround to fix an issue with how the Emacs
+                 ;; feature/native-comp branch changes the result of
+                 ;; `(locate-library "vterm")'. See emacs-devel thread
+                 ;; https://lists.gnu.org/archive/html/emacs-devel/2020-07/msg00306.html
+                 ;; for a discussion.
+                 (file-name-directory (locate-library "vterm.el" t))))
+              (make-commands
+                (concat
+                  "cd " vterm-directory "; \
              mkdir -p build; \
              cd build; \
              cmake -G 'Unix Makefiles' "
-             vterm-module-cmake-args
-             " ..; \
+                  vterm-module-cmake-args
+                  " ..; \
              make; \
              cd -"))
-           (buffer (get-buffer-create vterm-install-buffer-name)))
-      (pop-to-buffer buffer)
-      (compilation-mode)
-      (if (zerop (let ((inhibit-read-only t))
-                   (call-process "sh" nil buffer t "-c" make-commands)))
+              (buffer (get-buffer-create vterm-install-buffer-name)))
+        (pop-to-buffer buffer)
+        (compilation-mode)
+        (if (zerop (let ((inhibit-read-only t))
+                     (call-process "sh" nil buffer t "-c" make-commands)))
           (message "Compilation of `emacs-libvterm' module succeeded")
-        (error "Compilation of `emacs-libvterm' module failed!")))))
+          (error "Compilation of `emacs-libvterm' module failed!"))))))
 
 ;; If the vterm-module is not compiled yet, compile it
-(unless (require 'vterm-module nil t)
+(unless (eq system-type 'windows-nt)
+  (unless (require 'vterm-module nil t)
   (if (or vterm-always-compile-module
           (y-or-n-p "Vterm needs `vterm-module' to work.  Compile it now? "))
       (progn
         (vterm-module-compile)
         (require 'vterm-module))
-    (error "Vterm will not work until `vterm-module' is compiled!")))
+    (error "Vterm will not work until `vterm-module' is compiled!"))))
 
 ;;; Dependencies
 
 ;; Generate this list with:
 ;; awk -F\" '/bind_function*/ {print "(declare-function", $2, "\"vterm-module\")"}' vterm-module.c
-(declare-function vterm--new "vterm-module")
-(declare-function vterm--update "vterm-module")
-(declare-function vterm--redraw "vterm-module")
-(declare-function vterm--write-input "vterm-module")
-(declare-function vterm--set-size "vterm-module")
-(declare-function vterm--set-pty-name "vterm-module")
-(declare-function vterm--get-pwd-raw "vterm-module")
-(declare-function vterm--reset-point "vterm-module")
-(declare-function vterm--get-icrnl "vterm-module")
+(unless (eq system-type 'windows-nt)
+  (declare-function vterm--new "vterm-module")
+  (declare-function vterm--update "vterm-module")
+  (declare-function vterm--redraw "vterm-module")
+  (declare-function vterm--write-input "vterm-module")
+  (declare-function vterm--set-size "vterm-module")
+  (declare-function vterm--set-pty-name "vterm-module")
+  (declare-function vterm--get-pwd-raw "vterm-module")
+  (declare-function vterm--reset-point "vterm-module")
+  (declare-function vterm--get-icrnl "vterm-module"))
 
 (require 'subr-x)
 (require 'find-func)
