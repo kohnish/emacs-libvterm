@@ -839,12 +839,12 @@ Exceptions are defined by `vterm-keymap-exceptions'."
 (defun vterm--get-shell ()
   "Get the shell that gets run in the vterm."
   (if (ignore-errors (file-remote-p default-directory))
-    (with-parsed-tramp-file-name default-directory nil
-      (setq-local vterm--tramp-host host)
-      (setq-local vterm--tramp-method method)
+    (with-parsed-tramp-file-name default-directory vterm-prefix
+      (setq-local vterm--tramp-host vterm-prefix-host)
+      (setq-local vterm--tramp-method vterm-prefix-method)
       (cond
-        ((file-exists-p (format "/%s:%s:/bin/zsh" method host)) (with-connection-local-variables shell-file-name "/bin/zsh"))
-        ((file-exists-p (format "/%s:%s:/bin/bash" method host)) (with-connection-local-variables shell-file-name "/bin/bash"))
+        ((file-exists-p (format "/%s:%s:/bin/zsh" vterm--tramp-method vterm--tramp-host)) (with-connection-local-variables shell-file-name "/bin/zsh"))
+        ((file-exists-p (format "/%s:%s:/bin/bash" vterm--tramp-method vterm--tramp-host)) (with-connection-local-variables shell-file-name "/bin/bash"))
         (t (with-connection-local-variables shell-file-name "/bin/sh"))))
     (getenv "SHELL")))
 
