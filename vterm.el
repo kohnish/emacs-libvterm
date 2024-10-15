@@ -842,9 +842,12 @@ Exceptions are defined by `vterm-keymap-exceptions'."
     (with-parsed-tramp-file-name default-directory vterm-prefix
       (setq-local vterm--tramp-host vterm-prefix-host)
       (setq-local vterm--tramp-method vterm-prefix-method)
+      (if vterm-prefix-port
+        (setq-local vterm--tramp-port (concat "#" vterm-prefix-port))
+        (setq-local vterm--tramp-port ""))
       (cond
-        ((file-exists-p (format "/%s:%s:/bin/zsh" vterm--tramp-method vterm--tramp-host)) (with-connection-local-variables shell-file-name "/bin/zsh"))
-        ((file-exists-p (format "/%s:%s:/bin/bash" vterm--tramp-method vterm--tramp-host)) (with-connection-local-variables shell-file-name "/bin/bash"))
+        ((file-exists-p (format "/%s:%s%s:/bin/zsh" vterm--tramp-method vterm--tramp-host vterm--tramp-port)) (with-connection-local-variables shell-file-name "/bin/zsh"))
+        ((file-exists-p (format "/%s:%s%s:/bin/bash" vterm--tramp-method vterm--tramp-host vterm--tramp-port)) (with-connection-local-variables shell-file-name "/bin/bash"))
         (t (with-connection-local-variables shell-file-name "/bin/sh"))))
     (getenv "SHELL")))
 
@@ -1670,7 +1673,7 @@ If N is negative backward-line from end of buffer."
                   (progn
                     (when (file-directory-p dir)
                       (setq directory (file-name-as-directory dir))))
-                (setq directory (file-name-as-directory (concat method host ":" dir))))))
+                (setq directory (file-name-as-directory (concat method host ":" dir vterm--tramp-port))))))
         (when (file-directory-p path)
           (setq directory (file-name-as-directory path))))
       directory)))
